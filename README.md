@@ -15,3 +15,10 @@ To be used with NUCLEO-F446RE.
 
 When running off the battery move jumper JP5 to EV5.
 
+## Wiring air quality
+
+* Battery red wire to Vin.
+* Battery black wire to GND.
+* Dust sensor yellow to D1.
+* Dust sensor red to 5V.
+* Dust sensor black to GND.
