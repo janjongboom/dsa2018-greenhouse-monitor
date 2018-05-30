@@ -1,0 +1,6 @@
+{
+    "ignore": [
+        "./mbed-lora-radio-drv",
+        "./simulator-radio-drv"
+    ]
+}

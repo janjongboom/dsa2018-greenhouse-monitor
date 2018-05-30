@@ -1,0 +1,8 @@
+.mbed
+mbed_settings.py*
+BUILD/
+Cayenne-LPP/
+DHT/
+mbed-lora-radio-drv/
+mbed-os/
+
