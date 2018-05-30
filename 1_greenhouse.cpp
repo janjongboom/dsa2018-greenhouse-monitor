@@ -1,3 +1,7 @@
+#include "select_program.h"
+
+#if PROGRAM == GREENHOUSE_MONITOR
+
 #include "mbed.h"
 #include "mbed_trace.h"
 #include "mbed_events.h"
@@ -213,3 +217,5 @@ static void lora_event_handler(lorawan_event_t event) {
             MBED_ASSERT("Unknown Event");
     }
 }
+
+#endif
