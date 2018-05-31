@@ -30,8 +30,8 @@
     "target_overrides": {
         "*": {
             "platform.stdio-convert-newlines": true,
-            "platform.stdio-baud-rate": 115200,
-            "platform.default-serial-baud-rate": 115200,
+            "platform.stdio-baud-rate": 9600,
+            "platform.default-serial-baud-rate": 9600,
             "lora.duty-cycle-on": false,
             "lora.phy": 0,
             "target.features_add": ["COMMON_PAL"],
