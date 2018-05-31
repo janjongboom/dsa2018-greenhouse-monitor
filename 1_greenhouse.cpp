@@ -125,7 +125,7 @@ int main() {
         return -1;
     }
 
-    lorawan.set_datarate(0); // SF12BW125
+    lorawan.set_datarate(4); // SF8BW125
 
     lorawan_connect_t connect_params;
     connect_params.connect_type = LORAWAN_CONNECTION_ABP;
