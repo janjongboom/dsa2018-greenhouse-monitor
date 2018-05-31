@@ -70,9 +70,11 @@ static void send_message() {
         printf("Temp=%f Humi=%f\n", temp, humi);
     }
 
-    printf("Moist=%f\n", moist.read());
+    uint8_t moisture_value = static_cast<uint8_t>(moist.read() * 255.0f);
 
-    payload.addAnalogInput(4, moist.read());
+    printf("Moist=%u\n", moisture_value);
+
+    payload.addAnalogInput(4, static_cast<float>(moisture_value));
 
     printf("Sending %d bytes\n", payload.getSize());
 
@@ -99,6 +101,7 @@ int main() {
 
     printf("=========================================\n");
     printf("      DSA 2018 Green House Monitor       \n");
+    printf("      Device: 0x%08x                         \n", DEV_ADDR);
     printf("=========================================\n");
 
     printf("Sending every %d seconds\n", SEND_INTERVAL);
@@ -111,10 +114,6 @@ int main() {
         return -1;
     }
 
-    // Fire a message when the button is pressed
-    // btn.fall(ev_queue.event(&send_message));
-    ev_queue.call_in(SEND_INTERVAL * 1000, callback(&send_message));
-
     // prepare application callbacks
     callbacks.events = mbed::callback(lora_event_handler);
     lorawan.add_app_callbacks(&callbacks);
@@ -125,7 +124,7 @@ int main() {
         return -1;
     }
 
-    lorawan.set_datarate(4); // SF8BW125
+    lorawan.set_datarate(2); // SF10BW125
 
     lorawan_connect_t connect_params;
     connect_params.connect_type = LORAWAN_CONNECTION_ABP;
@@ -178,6 +177,7 @@ static void lora_event_handler(lorawan_event_t event) {
     switch (event) {
         case CONNECTED:
             printf("Connection - Successful\n");
+            ev_queue.call_in(1000, &send_message);
             break;
         case DISCONNECTED:
             ev_queue.break_dispatch();
