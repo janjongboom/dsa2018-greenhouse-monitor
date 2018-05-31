@@ -291,8 +291,6 @@ Dew point (fast) is 13.74
 Moisture is 0.000
 ```
 
-You should see the channels jumping between 8 and 15. If not, wait about a minute to let the sub-band frequency set. Often it takes a while to recognize the right channels.
-
 #### Windows
 
 To see debug messages, install:
