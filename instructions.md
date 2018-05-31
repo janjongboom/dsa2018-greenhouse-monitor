@@ -275,22 +275,20 @@ This has cloned the repository.
 
     **Note:** Here's a [video](https://youtu.be/L5TcmFFD0iw?t=1m25s).
 
-1. When flashing is complete, hit the **RESET** button on the board (the black button underneath the shield).
+1. When flashing is complete, hit the **RESET** button on the shield.
 
 ### Inspecting logs
 
 Let's inspect the logs... If all is well, you should see something similar to:
 
 ```
-LoRaWAN stack initialized
-Connection - In Progress ...
-Connection - Successful
-Sensor value is 23.00
-[INFO][LSTK]: RTS = 4 bytes, PEND = 0
-[DBG ][LMAC]: Next Channel Idx=6, DR=0
-[DBG ][LSTK]: Frame scheduled to TX..
-4 bytes scheduled for transmission
-Message Sent to Network Server
+Temperature is 23.00 C
+Temperature is 73.40 F
+Temperature is 296.15 K
+Humidity is 56.00
+Dew point is 13.77
+Dew point (fast) is 13.74
+Moisture is 0.000
 ```
 
 You should see the channels jumping between 8 and 15. If not, wait about a minute to let the sub-band frequency set. Often it takes a while to recognize the right channels.
@@ -336,3 +334,74 @@ sudo screen /dev/ttyACM0 9600                # might not need sudo if set up lsu
 
 To exit, press `CTRL+A` then type `:quit`.
 
+## 6. Sending the data to The Things Network
+
+In the Online Compiler:
+
+1. Open `select_program.h`.
+1. Change:
+
+    ```
+    #define         PROGRAM                     TEST_TEMP
+    ```
+
+    into:
+
+    ```
+    #define         PROGRAM                     GREENHOUSE_MONITOR
+    ```
+
+1. Then, open `1_greenhouse.cpp`.
+1. On line 17-19, add the keys from The Things Network (see step 2 & 3).
+1. Click *Compile*.
+
+    ![Compile](media/mbed4.png)
+
+1. A binary (.bin) file downloads, use drag-and-drop to copy the file to the NODE_F446RE device (like a USB mass storage device).
+
+    **Note:** Here's a [video](https://youtu.be/L5TcmFFD0iw?t=1m25s).
+
+1. When flashing is complete, hit the **RESET** button on the shield.
+
+Inspect the logs on the device... They should say something like:
+
+```
+=========================================
+      DSA 2018 Green House Monitor
+=========================================
+Sending every 20 seconds
+[DBG ][LSTK]: Initializing MAC layer
+[DBG ][LSTK]: Initiating ABP
+[DBG ][LSTK]: Frame Counters. UpCnt=0, DownCnt=0
+[DBG ][LSTK]: ABP Connection OK!
+Connection - In Progress ...
+Connection - Successful
+Temp=23.000000 Humi=55.000000
+Moist=0.000000
+Sending 11 bytes
+[INFO][LSTK]: RTS = 11 bytes, PEND = 0
+[DBG ][LMAC]: Next Channel Idx=0, DR=4
+[DBG ][LSTK]: Frame scheduled to TX..
+11 bytes scheduled for transmission
+```
+
+And you should now see data in The Things Network console for your device. Success!
+
+## 7. Battery powered
+
+Unfortunately a small mistake was made on the shield regarding polarity of the battery connector, so to connect a battery:
+
+1. Take battery holder and place 3 AAA batteries in there.
+1. Jam two wires into the connector.
+1. Connect them to Vin (red) and GND (black), these are on the left side of the shield (side with the DSA logo).
+
+    ![battery](media/pinout3.png)
+
+1. Then remove the USB cable, and remove the shield, and find jumper JP5.
+
+    ![jumper](media/IMG_3523.JPG)
+
+1. Move it from U5V to E5V.
+1. Place the shield back.
+1. Switch the battery holder on.
+1. The device is back online.
