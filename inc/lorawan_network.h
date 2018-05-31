@@ -24,6 +24,11 @@ static lorawan_app_callbacks_t callbacks;
 static void lora_event_handler(lorawan_event_t event);
 
 static void lorawan_setup(uint32_t devAddr, uint8_t nwkSKey[16], uint8_t appSKey[16]) {
+    if (DEV_ADDR == 0x0) {
+        printf("Set your LoRaWAN credentials first!\n");
+        return -1;
+    }
+
     // Enable trace output for this demo, so we can see what the LoRaWAN stack does
     mbed_trace_init();
 
