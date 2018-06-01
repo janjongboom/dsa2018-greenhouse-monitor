@@ -278,5 +278,7 @@
             "lora-tcxo":           "NC"
         }
     },
-    "macros": ["MBEDTLS_USER_CONFIG_FILE=\"mbedtls_lora_config.h\""]
+    "macros": [
+        "MBEDTLS_USER_CONFIG_FILE=\"mbedtls_lora_config.h\""
+    ]
 }

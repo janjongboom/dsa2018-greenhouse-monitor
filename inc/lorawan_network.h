@@ -23,10 +23,10 @@ static lorawan_app_callbacks_t callbacks;
 // LoRaWAN stack event handler
 static void lora_event_handler(lorawan_event_t event);
 
-static void lorawan_setup(uint32_t devAddr, uint8_t nwkSKey[16], uint8_t appSKey[16]) {
-    if (DEV_ADDR == 0x0) {
+static void lorawan_setup(uint32_t devAddr, uint8_t nwkSKey[16], uint8_t appSKey[16], Callback<void(lorawan_event_t)> lw_event_handler) {
+    if (devAddr == 0x0) {
         printf("Set your LoRaWAN credentials first!\n");
-        return -1;
+        return;
     }
 
     // Enable trace output for this demo, so we can see what the LoRaWAN stack does
@@ -38,7 +38,7 @@ static void lorawan_setup(uint32_t devAddr, uint8_t nwkSKey[16], uint8_t appSKey
     }
 
     // prepare application callbacks
-    callbacks.events = mbed::callback(lora_event_handler);
+    callbacks.events = lw_event_handler;
     lorawan.add_app_callbacks(&callbacks);
 
     // Disable adaptive data rating
@@ -47,7 +47,7 @@ static void lorawan_setup(uint32_t devAddr, uint8_t nwkSKey[16], uint8_t appSKey
         return;
     }
 
-    lorawan.set_datarate(3); // SF9BW125
+    lorawan.set_datarate(0); // SF12BW125
 
     lorawan_connect_t connect_params;
     connect_params.connect_type = LORAWAN_CONNECTION_ABP;
@@ -95,51 +95,18 @@ static void receive_message()
 }
 
 // Event handler
-static void lora_event_handler(lorawan_event_t event) {
-    switch (event) {
-        case CONNECTED:
-            printf("[LNWK][INFO] Connection - Successful\n");
-            break;
-        case DISCONNECTED:
-            ev_queue.break_dispatch();
-            printf("[LNWK][INFO] Disconnected Successfully\n");
-            break;
-        case TX_DONE:
-            printf("[LNWK][INFO] Message Sent to Network Server\n");
-            break;
-        case TX_TIMEOUT:
-        case TX_ERROR:
-        case TX_CRYPTO_ERROR:
-        case TX_SCHEDULING_ERROR:
-            printf("[LNWK][INFO] Transmission Error - EventCode = %d\n", event);
-            break;
-        case RX_DONE:
-            printf("[LNWK][INFO] Received message from Network Server\n");
-            receive_message();
-            break;
-        case RX_TIMEOUT:
-        case RX_ERROR:
-            printf("[LNWK][INFO] Error in reception - Code = %d\n", event);
-            break;
-        case JOIN_FAILURE:
-            printf("[LNWK][INFO] OTAA Failed - Check Keys\n");
-            break;
-        default:
-            MBED_ASSERT("Unknown Event");
-    }
-}
-
-void lorawan_send(CayenneLPP *payload) {
+bool lorawan_send(CayenneLPP *payload) {
     int16_t retcode = lorawan.send(MBED_CONF_LORA_APP_PORT, payload->getBuffer(), payload->getSize(), MSG_UNCONFIRMED_FLAG);
 
     // for some reason send() ret\urns -1... I cannot find out why, the stack returns the right number. I feel that this is some weird Emscripten quirk
     if (retcode < 0) {
         retcode == LORAWAN_STATUS_WOULD_BLOCK ? printf("[LNWK][WARN] send - duty cycle violation\n")
                 : printf("[LNWK][WARN] send() - Error code %d\n", retcode);
-        return;
+        return false;
     }
 
     printf("[LNWK][INFO] %d bytes scheduled for transmission\n", retcode);
+    return true;
 }
 
 #endif // _LORAWAN_NETWORK_H_
